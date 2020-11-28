@@ -26,7 +26,7 @@ class BruteForce(BaseEstimator):
             if x_test is not None and not isinstance(x_test, DataFrame):
                 x_test = DataFrame(x_test, columns=feature_names)
 
-        feature_names = x.columns
+        feature_names = list(x.columns)
 
         subsets_evals = self._evaluate_all_subsets(x, y, x_test, y_test)
         tracker = ContributionTracker(n_features=len(feature_names), track_all=self._track_all)

@@ -95,9 +95,9 @@ class LgbEvaluator:
                  y,
                  x_test,
                  y_test) -> float:
-        X_train, X_val, y_train, y_val = train_test_split(x, y, test_size=0.20, random_state=5)
-        lgb_train = lgb.Dataset(x, y, feature_name=list(x.columns))
-        lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train)
+        x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.20, random_state=5)
+        lgb_train = lgb.Dataset(x_train, y_train, feature_name=list(x.columns))
+        lgb_eval = lgb.Dataset(x_val, y_val, reference=lgb_train)
         gbm = lgb.train(self._param_dict,
                         lgb_train,
                         num_boost_round=self._num_boost_round,
