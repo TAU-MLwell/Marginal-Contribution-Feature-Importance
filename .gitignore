@@ -2,3 +2,5 @@
 #pychacm files
 *.pyc
 .idea/*
+/mci/experiments/*
+/mci/sage/*

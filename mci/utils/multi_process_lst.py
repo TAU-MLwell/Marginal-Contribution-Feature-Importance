@@ -8,8 +8,8 @@ def multi_process_lst(lst, apply_on_chunk, chunk_size=1000, n_processes=1, args=
     chunks = split(lst, n_processes)
     chunks = flatten_iterable(group(c, chunk_size) for c in chunks if len(c) > 0)
     if n_processes == 1:
-        for c in chunks:
-            yield apply_on_chunk(c, *args)
+        for c in lst:
+            yield apply_on_chunk([c], *args)
     else:
         with Pool(n_processes) as pool:
 

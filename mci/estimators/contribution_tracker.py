@@ -12,6 +12,8 @@ class ContributionTracker:
         self.track_all = track_all
 
         self.max_contributions = [0.0]*self._n_features
+        self.sum_contributions = [0.0]*self._n_features
+        self.n_contributions = [0.0]*self._n_features
         self.argmax_contexts = [set() for _ in range(self._n_features)]
 
         self.all_contributions = [[] for _ in range(self._n_features)]
@@ -21,6 +23,9 @@ class ContributionTracker:
         if contribution > self.max_contributions[feature_idx] + noise_tolerance:
             self.max_contributions[feature_idx] = contribution
             self.argmax_contexts[feature_idx] = context
+
+        self.n_contributions[feature_idx] += 1
+        self.sum_contributions[feature_idx] += contribution
 
         if self.track_all:
             self.all_contributions[feature_idx].append(contribution)
@@ -34,3 +39,7 @@ class ContributionTracker:
         else:
             for feature_idx, (cont, context) in enumerate(zip(tracker.max_contributions, tracker.argmax_contexts)):
                 self.update_value(feature_idx, cont, context)
+
+    @property
+    def avg_contributions(self):
+        return [s/max(n, 1) for s, n in zip(self.sum_contributions, self.n_contributions)]

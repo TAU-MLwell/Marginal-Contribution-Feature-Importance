@@ -1,13 +1,14 @@
 from typing import Callable, Optional
 import numpy as np
+import lightgbm as lgb
+
 from sklearn.dummy import DummyClassifier, DummyRegressor
-from sklearn.metrics import check_scoring
-from sklearn.model_selection import cross_val_score
+from sklearn.metrics import check_scoring, roc_auc_score
+from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.base import is_classifier
 
 from mci.utils.estimators_util import is_empty
 from mci.utils.type_hints import MultiVariateArray, UniVariateArray
-
 
 EvaluationFunction = Callable[[MultiVariateArray, UniVariateArray,
                                Optional[MultiVariateArray], Optional[UniVariateArray]], float]
@@ -66,3 +67,45 @@ class SklearnEvaluator:
             return self._scorer(self._model, x_test, y_test)
         else:
             return cross_val_score(model, x, y, cv=self._cv, scoring=self._scorer).mean()
+
+
+class LgbEvaluator:
+
+    DEAFULT_PARAMS = {
+        'objective': 'binary',
+        'metric': 'auc',
+        'is_unbalance': 'true',
+        'boosting': 'gbdt',
+        'num_leaves': 20,
+        'min_data_in_leaf': 4,
+        'feature_fraction': 1.0,
+        'bagging_fraction': 0.8,
+        'bagging_freq': 5,
+        'learning_rate': 0.05,
+        'verbose': -1
+    }
+
+    def __init__(self, param_dict: dict = DEAFULT_PARAMS, num_boost_round: int = 603, early_stopping_rounds: int = 5):
+        self._param_dict = param_dict
+        self._num_boost_round = num_boost_round
+        self._early_stopping_rounds = early_stopping_rounds
+
+    def __call__(self,
+                 x,
+                 y,
+                 x_test,
+                 y_test) -> float:
+        X_train, X_val, y_train, y_val = train_test_split(x, y, test_size=0.20, random_state=5)
+        lgb_train = lgb.Dataset(x, y, feature_name=list(x.columns))
+        lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train)
+        gbm = lgb.train(self._param_dict,
+                        lgb_train,
+                        num_boost_round=self._num_boost_round,
+                        valid_sets=lgb_eval,
+                        early_stopping_rounds=self._early_stopping_rounds,
+                        verbose_eval=False)
+
+        y_test = y_test.astype(int)
+        y_pred = gbm.predict(x_test, num_iteration=gbm.best_iteration)
+        auc = roc_auc_score(y_test, y_pred)
+        return auc

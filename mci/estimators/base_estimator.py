@@ -72,7 +72,6 @@ class BaseEstimator(ABC):
                                 y_test: Optional[UniVariateArray]) -> Dict[Tuple[str], float]:
         evaluations: Dict[Tuple[str, ...], float] = {}
         for s in subsets:
-            if x_test is not None:
-                x_test = x_test[list(s)]
-            evaluations[context_to_key(s)] = self._evaluator(x[list(s)], y, x_test, y_test)
+            evaluations[context_to_key(s)] = self._evaluator(x[list(s)], y, x_test[list(s)] if x_test is not None
+            else None, y_test)
         return evaluations
