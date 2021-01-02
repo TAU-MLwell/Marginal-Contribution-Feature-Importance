@@ -1,4 +1,5 @@
-from typing import Set
+from typing import Set, List
+import json
 
 
 class ContributionTracker:
@@ -39,6 +40,31 @@ class ContributionTracker:
         else:
             for feature_idx, (cont, context) in enumerate(zip(tracker.max_contributions, tracker.argmax_contexts)):
                 self.update_value(feature_idx, cont, context)
+
+    def save_to_file(self, feature_names: List[str], file_path: str):
+        state = {}
+
+        state["max_contributions"] = self.max_contributions
+        state["sum_contributions"] = self.sum_contributions
+        state["n_contributions"] = self.n_contributions
+        state["argmax_contexts"] = [list(c) for c in self.argmax_contexts]
+        state["feature_names"] = feature_names
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+
+    @staticmethod
+    def load_from_file(file_path: str, feature_names: List[str]) -> 'ContributionTracker':
+        with open(file_path) as f:
+            state = json.load(f)
+
+        assert feature_names == state["feature_names"]
+        tracker = ContributionTracker(n_features=len(feature_names), track_all=False)
+        tracker.max_contributions = state["max_contributions"]
+        tracker.sum_contributions = state["sum_contributions"]
+        tracker.n_contributions = state["n_contributions"]
+        tracker.argmax_contexts = state["argmax_contexts"]
+        return tracker
 
     @property
     def avg_contributions(self):
