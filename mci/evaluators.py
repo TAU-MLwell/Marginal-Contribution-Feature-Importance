@@ -2,7 +2,6 @@ from typing import Callable, Optional
 import numpy as np
 import lightgbm as lgb
 import xgboost
-from sklearn.metrics import mean_squared_error
 from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.metrics import check_scoring, roc_auc_score
 from sklearn.model_selection import cross_val_score, train_test_split
@@ -124,7 +123,7 @@ class xgboostEvaluator:
                  y_test) -> float:
         params = {
             "learning_rate": 0.01,
-            "n_estimators": 200,
+            "n_estimators": 600,
             "max_depth": 4,
             "subsample": 0.5,
             "reg_lambda": 5.5,
