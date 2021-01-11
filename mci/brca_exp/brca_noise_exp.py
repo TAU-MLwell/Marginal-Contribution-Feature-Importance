@@ -11,8 +11,8 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    n_noise_feautres = sys.argv[1]
-    n_processes = sys.argv[2] if len(sys.argv) > 2 else 10
+    n_noise_feautres = int(sys.argv[1])
+    n_processes = int(sys.argv[2]) if len(sys.argv) > 2 else 1
 
     exp_name = "brca_{}_02_noise_features".format(n_noise_feautres)
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     clf = LogisticRegression(random_state=0, max_iter=1000, C=0.1)
     evaluator = SklearnEvaluator(clf, cv=3, scoring='neg_log_loss')
 
-    estimator = PermutationSampling(evaluator=evaluator, out_dir=exp_name,  n_processes=1,
+    estimator = PermutationSampling(evaluator=evaluator, out_dir=exp_name,  n_processes=n_processes,
                                     noise_factor=0.0, chunk_size=2000, n_permutations=2**15,
                                     permutations_batch_size=50)
 
