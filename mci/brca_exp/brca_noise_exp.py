@@ -11,16 +11,18 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    n_noise_feautres = int(sys.argv[1])
-    n_processes = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+    s_noise_feautres = int(sys.argv[1]) + 10
+    e_noise_feautres = int(sys.argv[2]) + 10
 
-    exp_name = "brca_{}_02_noise_features".format(n_noise_feautres)
+    n_processes = int(sys.argv[3]) if len(sys.argv) > 2 else 1
+
+    exp_name = "brca_{}_{}_02_noise_features".format(s_noise_feautres, e_noise_feautres)
 
     data = pd.read_csv(r'noise_genes_02.csv')
 
     y = data["BRCA_Subtype_PAM50"]
 
-    x = data[data.columns[:n_noise_feautres+10]]
+    x = data[data.columns.tolist()[:10] + data.columns.tolist()[s_noise_feautres:e_noise_feautres]]
 
     clf = LogisticRegression(random_state=0, max_iter=1000, C=0.1)
     evaluator = SklearnEvaluator(clf, cv=3, scoring='neg_log_loss')
