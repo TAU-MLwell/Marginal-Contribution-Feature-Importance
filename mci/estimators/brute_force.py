@@ -3,7 +3,7 @@ from typing import Optional, Tuple, List, Dict
 from pandas import DataFrame
 from mci.estimators.contribution_tracker import ContributionTracker
 from mci.utils.pac_noise import pac_noise
-from mci.evaluators import MultiVariateArray, UniVariateArray
+from mci.utils.type_hints import MultiVariateArray, UniVariateArray
 from mci.estimators.base_estimator import BaseEstimator
 from mci.mci_values import MciValues
 from mci.utils.estimators_util import context_to_key

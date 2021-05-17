@@ -6,7 +6,7 @@ from tqdm.auto import tqdm
 
 from mci.estimators.base_estimator import BaseEstimator
 from mci.estimators.contribution_tracker import ContributionTracker
-from mci.evaluators import EvaluationFunction
+from mci.evaluators.evaluator_function import EvaluationFunction
 from mci.mci_values import MciValues
 from mci.utils.estimators_util import context_to_key
 from mci.utils.type_hints import MultiVariateArray, UniVariateArray
@@ -17,9 +17,9 @@ class PermutationSampling(BaseEstimator):
     def __init__(self,
                  evaluator: EvaluationFunction,
                  n_permutations: int,
-                 out_dir: str,
-                 n_processes: int = 5,
-                 chunk_size: int = 2**12,
+                 out_dir: Optional[str] = None,
+                 n_processes: int = 1,
+                 chunk_size: int = 2**8,
                  max_context_size: int = 100000,
                  noise_confidence: float = 0.05,
                  noise_factor: float = 0.1,
@@ -51,14 +51,14 @@ class PermutationSampling(BaseEstimator):
                 x_test = DataFrame(x_test, columns=feature_names)
 
         feature_names = list(x.columns)
-        if os.path.isdir(self._out_dir) and len(os.listdir(self._out_dir)) > 0:
+        if self._out_dir and os.path.isdir(self._out_dir) and len(os.listdir(self._out_dir)) > 0:
             files = [int(f.replace(".json", "")) for f in os.listdir(self._out_dir) if f.endswith(".json")]
             self._n_permutations_done = sorted(files)[-1]
             most_updated_file = os.path.join(self._out_dir, f"{self._n_permutations_done}.json")
             print(f"loading results checkpoint from {most_updated_file}")
             tracker = ContributionTracker.load_from_file(most_updated_file, feature_names)
         else:
-            if not os.path.isdir(self._out_dir):
+            if self._out_dir and not os.path.isdir(self._out_dir):
                 os.mkdir(self._out_dir)
             tracker = ContributionTracker(n_features=len(feature_names), track_all=self._track_all)
 

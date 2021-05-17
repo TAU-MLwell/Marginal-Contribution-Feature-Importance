@@ -3,7 +3,7 @@ from pandas import DataFrame
 from tqdm.auto import tqdm
 
 from mci.estimators.base_estimator import BaseEstimator
-from mci.evaluators import EvaluationFunction
+from mci.evaluators.evaluator_function import EvaluationFunction
 from mci.mci_values import MciValues
 from mci.utils.pac_noise import pac_noise
 from mci.utils.type_hints import MultiVariateArray, UniVariateArray

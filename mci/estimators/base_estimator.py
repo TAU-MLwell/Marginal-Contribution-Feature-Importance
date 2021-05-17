@@ -3,7 +3,7 @@ from typing import Optional, Sequence, List, Iterable, Dict, Tuple
 from tqdm.auto import tqdm
 from pandas import DataFrame
 
-from mci.evaluators import MultiVariateArray, UniVariateArray, EvaluationFunction
+from mci.evaluators.evaluator_function import MultiVariateArray, UniVariateArray, EvaluationFunction
 from mci.mci_values import MciValues
 from mci.utils.estimators_util import context_to_key
 from mci.utils.multi_process_lst import multi_process_lst
